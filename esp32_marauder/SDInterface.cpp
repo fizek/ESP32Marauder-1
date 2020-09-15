@@ -1,9 +1,9 @@
 #include "SDInterface.h"
 
-bool SDInterface::initSD() {
+bool SDInterface::initSD( int sdCs ) {
   String display_string = "";
 
-  if (!SD.begin(SD_CS)) {
+  if (!SD.begin( sdCs )) {
     Serial.println("Failed to mount SD Card");
     this->supported = false;
     return false;

@@ -30,21 +30,8 @@ void Display::RunSetup()
   //tft.setFreeFont(&FreeMonoBold9pt7b);
 
   // Calibration data
-  //uint16_t calData[5] = { 390, 3516, 253, 3520, 7 }; tft.setRotation(1); // Portrait
-
-  #if defined(TFT_SHIELD)
-    uint16_t calData[5] = { 275, 3494, 361, 3528, 4 }; // tft.setRotation(0); // Portrait with TFT Shield
-    Serial.println("Using TFT Shield");
-  #elif defined(TFT_DIY)
-    // uint16_t calData[5] = { 339, 3470, 237, 3438, 2 }; // tft.setRotation(0); // Portrait with DIY TFT
-    uint16_t calData[5] = { 808, 2241, 599, 3448, 0 }; // tft.setRotation(0); // Portrait with DIY TFT
-    Serial.println("Using TFT DIY");
-  #else
-    #error "Please select either TFT_SHIELD or TFT_DIY"
-  #endif
-  tft.setTouch(calData);
-
-  //tft.fillScreen(TFT_BLACK);
+  //TODO: unfreeze touch calibration data from NVS or run calibration
+  //tft.setTouchCalibrate(calData);
   clearScreen();
 
   auto currentPanel = tft.getPanel();
@@ -59,7 +46,6 @@ void Display::RunSetup()
     Serial.println("SPIFFS initialisation failed!");
     while (1) yield(); // Stay here twiddling thumbs waiting
   }
-
 
   // Draw the title screen
   //drawJpeg("/marauder3L.jpg", 0 , 0);     // 240 x 320 image
@@ -331,8 +317,10 @@ void Display::touchToExit()
 void Display::clearScreen()
 {
   Serial.println("clearScreen()");
+  fadeOut();
   tft.fillScreen(TFT_BLACK);
   tft.setCursor(0, 0);
+  fadeIn();
 }
 
 void Display::displayBuffer(bool do_clear)
@@ -351,6 +339,8 @@ void Display::displayBuffer(bool do_clear)
         yDraw = scroll_line(TFT_RED);
         tft.setCursor(xPos, yDraw);
         tft.setTextColor(TFT_GREEN, TFT_BLACK);
+        tft.setTextSize(1);           // Font size scaling is x1
+        tft.setTextFont(0);           // Font 4 selected
         tft.print(display_buffer->shift());
         printing = false;
         delay(print_delay_2);
@@ -370,6 +360,32 @@ void Display::showCenterText(String text, int y)
 }
 
 
+void Display::fadeIn()
+{
+  for(int i=0;i<brightness+1;i+=2) {
+    tft.setBrightness(i);
+    delay(5);
+  }
+}
+
+
+void Display::fadeOut()
+{
+  if( brightness > 0 ) {
+    for(int i=0;i<brightness+1;i+=2) {
+      tft.setBrightness(brightness-i);
+      delay(5);
+    }
+  }
+}
+
+
+void Display::setBrightness( byte _brightness )
+{
+  brightness = _brightness;
+}
+
+
 void Display::initScrollValues(bool tte)
 {
   Serial.println("initScrollValues()");
@@ -377,18 +393,10 @@ void Display::initScrollValues(bool tte)
 
   xPos = 0;
 
-  if (!tte)
-  {
-    yStart = TOP_FIXED_AREA;
+  int tfa = tte ? TOP_FIXED_AREA_2 : TOP_FIXED_AREA;
 
-    yArea = YMAX - TOP_FIXED_AREA - BOT_FIXED_AREA;
-  }
-  else
-  {
-    yStart = TOP_FIXED_AREA_2;
-
-    yArea = YMAX - TOP_FIXED_AREA_2 - BOT_FIXED_AREA;
-  }
+  yStart = tfa;
+  yArea = YMAX - tfa - BOT_FIXED_AREA;
 
   for(int i = 0; i < 18; i++) blank[i] = 0;
 }
@@ -400,28 +408,29 @@ int Display::scroll_line(uint32_t color) {
   //Serial.println("scroll_line()");
   int yTemp = yStart; // Store the old yStart, this is where we draw the next line
   // Use the record of line lengths to optimise the rectangle size we need to erase the top line
+  int tfa = tteBar ? TOP_FIXED_AREA_2 : TOP_FIXED_AREA;
 
-  // Check if we have the "touch to exit bar"
-  if (!tteBar)
-  {
-    tft.fillRect(0,yStart,blank[(yStart-TOP_FIXED_AREA)/TEXT_HEIGHT],TEXT_HEIGHT, color);
+  // this isn't really necessary as it will eventually get overwritten
+  // tft.fillRect(0,yStart,blank[(yStart-tfa)/TEXT_HEIGHT],TEXT_HEIGHT, color);
 
-    // Change the top of the scroll area
-    yStart+=TEXT_HEIGHT;
-    // The value must wrap around as the screen memory is a circular buffer
-    if (yStart >= YMAX - BOT_FIXED_AREA) yStart = TOP_FIXED_AREA + (yStart - YMAX + BOT_FIXED_AREA);
+  // Change the top of the scroll area
+  yStart+=TEXT_HEIGHT;
+  // The value must wrap around as the screen memory is a circular buffer
+  if (yStart >= YMAX - BOT_FIXED_AREA) {
+    yStart = tfa + (yStart - YMAX + BOT_FIXED_AREA);
   }
-  else
-  {
-    tft.fillRect(0,yStart,blank[(yStart-TOP_FIXED_AREA_2)/TEXT_HEIGHT],TEXT_HEIGHT, color);
 
-    // Change the top of the scroll area
-    yStart+=TEXT_HEIGHT;
-    // The value must wrap around as the screen memory is a circular buffer
-    if (yStart >= YMAX - BOT_FIXED_AREA) yStart = TOP_FIXED_AREA_2 + (yStart - YMAX + BOT_FIXED_AREA);
+  // Now we can smooth-scroll the display
+  if( yTemp < yStart ) {
+    for( int i=yTemp;i<yStart;i++ ) {
+      tft.drawFastHLine( 0, i, tft.width(), TFT_BLACK ); // delete line before scrolling
+      scrollAddress(i);
+      delay(5);
+    }
+  } else {
+    // this may be jumpy
+    scrollAddress(yStart);
   }
-  // Now we can scroll the display
-  scrollAddress(yStart);
   return  yTemp;
 }
 

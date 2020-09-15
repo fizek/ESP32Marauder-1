@@ -87,7 +87,9 @@ void MenuFunctions::main(uint32_t currentTime)
       wifi_scan_obj.StartScan(WIFI_SCAN_OFF);
 
       // If we don't do this, the text and button coordinates will be off
-      tft.init();
+      // dafuq ??
+      display_obj.scrollAddress(0);
+      //tft.init();
 
       // Take us back to the menu
       changeMenu(current_menu);
@@ -390,7 +392,7 @@ void MenuFunctions::drawStatusBar()
 
 void MenuFunctions::orientDisplay()
 {
-  tft.init();
+  //tft.init();
 
   tft.setRotation(0); // Portrait
 
@@ -409,7 +411,7 @@ void MenuFunctions::orientDisplay()
   #error "Please select either TFT_SHIELD or TFT_DIY"
 #endif
 
-  tft.setTouch(calData);
+  tft.setTouchCalibrate(calData);
 
   //display_obj.clearScreen();
 
@@ -679,11 +681,9 @@ void MenuFunctions::changeMenu(Menu * menu)
 {
   display_obj.initScrollValues();
   display_obj.setupScrollArea(TOP_FIXED_AREA, BOT_FIXED_AREA);
-  tft.init();
+  //tft.init(); // why ????
   current_menu = menu;
-
   buildButtons(menu);
-
   displayCurrentMenu();
 }
 

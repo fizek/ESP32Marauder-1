@@ -2,7 +2,6 @@
 #define Display_h
 
 
-//#undef LGFX_AUTODETECT
 #define LGFX_LOLIN_D32_PRO
 #define TOUCH_CS 21 // enable touch
 #include <ESP32-Chimera-Core.h> // https://github.com/tobozo/ESP32-Chimera-Core or regular M5Stack Core
@@ -84,13 +83,15 @@ class Display
     //TFT_eSPI tft = TFT_eSPI();
     //TFT_eSprite img = TFT_eSprite(&tft);
     TouchButton key[BUTTON_ARRAY_LEN];
-    String version_number = "v0.6.9";
+    String version_number = "v0.8.1";
 
     bool printing = false;
     bool loading = false;
     bool tteBar = false;
     bool draw_tft = false;
     bool exit_draw = false;
+
+    byte brightness = 128; // 0 = off, 255 = max
 
     int TOP_FIXED_AREA_2 = 48;
     int print_delay_1, print_delay_2 = 10;
@@ -132,6 +133,9 @@ class Display
     void tftDrawExitScaleButtons();
     void buildBanner(String msg, int xpos);
     void clearScreen();
+    void fadeIn();
+    void fadeOut();
+    void setBrightness( byte _newbrightness );
     void displayBuffer(bool do_clear = false);
     //void drawJpeg(const char *filename, int xpos, int ypos);
     void setupDraw();

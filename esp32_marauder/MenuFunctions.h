@@ -22,7 +22,7 @@ extern BatteryInterface battery_obj;
 #define KEY_W 240 // Width and height
 #define KEY_H 22
 #define KEY_SPACING_X 0 // X and Y gap
-#define KEY_SPACING_Y 1
+#define KEY_SPACING_Y 10 // space for fingers FFS !!
 #define KEY_TEXTSIZE 1   // Font size multiplier
 #define ICON_W 22
 #define ICON_H 22

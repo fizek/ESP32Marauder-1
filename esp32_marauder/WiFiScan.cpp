@@ -383,7 +383,7 @@ void WiFiScan::RunPacketMonitor(uint8_t scan_mode, uint16_t color)
     #error "Please select either TFT_SHIELD or TFT_DIY"
   #endif
 
-  tft.setTouch(calData);
+  //tft.setTouchCalibrate(calData);
 
   //tft.setFreeFont(1);
   tft.setFreeFont(NULL);
@@ -429,7 +429,7 @@ void WiFiScan::RunEapolScan(uint8_t scan_mode, uint16_t color)
     uint16_t calData[5] = { 213, 3469, 320, 3446, 1 }; // Landscape TFT DIY
     Serial.println("Using TFT DIY");
   #endif
-  tft.setTouch(calData);
+  //tft.setTouchCalibrate(calData);
 
   //tft.setFreeFont(1);
   tft.setFreeFont(NULL);
@@ -840,17 +840,29 @@ void WiFiScan::pwnSnifferCallback(void* buf, wifi_promiscuous_pkt_type_t type)
         //Serial.println("\n" + (String)(snifferPacket->payload[37]) + " -> " + essid);
 
         // Load json
-        DynamicJsonBuffer jsonBuffer;
-        JsonObject& json = jsonBuffer.parseObject(essid);
-        if (!json.success()) {
+        //DynamicJsonBuffer jsonBuffer;  //j5
+        // JsonObject& json = jsonBuffer.parseObject(essid);  //j5
+
+        DynamicJsonDocument doc(1024); //j6
+        deserializeJson(doc, essid);  //j6
+        auto error = deserializeJson(doc, essid);  //j6
+
+        //   if (!json.success()) {  //j5
+
+        if (error) {   //j6
           Serial.println("\nCould not parse Pwnagotchi json");
         }
         else {
           Serial.println("\nSuccessfully parsed json");
-          String json_output;
-          json.printTo(json_output);
-          Serial.println(json_output);
-          display_string.concat(json["name"].as<String>() + " pwnd: " + json["pwnd_tot"].as<String>());
+          String doc_output; //j6
+          serializeJson(doc, doc_output); //j6
+          Serial.println(doc_output); //j6
+          display_string.concat(doc["name"].as<String>() + " pwnd: " + doc["pwnd_tot"].as<String>()); // j6
+
+          //          String json_output; //j5
+          //          json.printTo(json_output); //j5
+          //          Serial.println(json_output); //j5
+          //          display_string.concat(json["name"].as<String>() + " pwnd: " + json["pwnd_tot"].as<String>()); //j5
         }
 
         int temp_len = display_string.length();

@@ -9,6 +9,7 @@
 extern Buffer buffer_obj;
 extern Display display_obj;
 
+// TODO: move this pin number to a config file
 #define SD_CS 12
 
 class SDInterface {
@@ -25,8 +26,8 @@ class SDInterface {
     bool do_save = true;
 
     String card_sz;
-  
-    bool initSD();
+
+    bool initSD( int sdCs=SD_CS );
 
     void addPacket(uint8_t* buf, uint32_t len);
     void openCapture(String file_name = "");
