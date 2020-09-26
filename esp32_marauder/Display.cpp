@@ -25,20 +25,27 @@ void Display::RunSetup()
   // Need to declare new
   display_buffer = new LinkedList<String>();
 
-  tft.setRotation(0); // Portrait
-  tft.setCursor(0, 0);
+  //tft.setRotation(0); // Portrait
+  tft.setCursor( 0, 0 );
+  tft.setTextFont( 0 );
+  tft.setTextSize( 1 );
   //tft.setFreeFont(&FreeMonoBold9pt7b);
+
+  //img.setColorDepth(8);
+  img.createSprite(SCREEN_WIDTH, TEXT_HEIGHT);
 
   // Calibration data
   //TODO: unfreeze touch calibration data from NVS or run calibration
   //tft.setTouchCalibrate(calData);
-  clearScreen();
+  //clearScreen();
 
+  /*
   auto currentPanel = tft.getPanel();
 
   Serial.println("SPI_FREQUENCY: " + (String)((int)getApbFrequency()>>1));
   Serial.println("SPI_READ_FREQUENCY: " + (String)currentPanel->freq_read);
   Serial.println("SPI_TOUCH_FREQUENCY: " + (String)2000000);
+*/
 
   // Initialize file system
   // This should probably have its own class
@@ -51,7 +58,7 @@ void Display::RunSetup()
   //drawJpeg("/marauder3L.jpg", 0 , 0);     // 240 x 320 image
 
   //showCenterText(version_number, 250);
-  //tft.drawCentreString(version_number, 120, 250, 2);
+  //tft.drawCentreString(version_number, SCREEN_WIDTH/2, 250, 2);
 
   //digitalWrite(TFT_BL, HIGH);
 
@@ -293,7 +300,7 @@ void Display::tftDrawExitScaleButtons()
 void Display::twoPartDisplay(String center_text)
 {
   tft.setTextColor(TFT_BLACK, TFT_YELLOW);
-  tft.fillRect(0,16,HEIGHT_1,144, TFT_YELLOW);
+  tft.fillRect( 0, 16, SCREEN_WIDTH, 144, TFT_YELLOW);
   //tft.drawCentreString(center_text,120,82,1);
   tft.setTextWrap(true);
   tft.setFreeFont(NULL);
@@ -308,8 +315,8 @@ void Display::twoPartDisplay(String center_text)
 void Display::touchToExit()
 {
   tft.setTextColor(TFT_BLACK, TFT_LIGHTGREY);
-  tft.fillRect(0,32,HEIGHT_1,16, TFT_LIGHTGREY);
-  tft.drawCentreString("Touch screen to exit",120,32,2);
+  tft.fillRect(0, 32, SCREEN_WIDTH, 16, TFT_LIGHTGREY);
+  tft.drawCentreString("Touch screen to exit", SCREEN_WIDTH/2, 32, 2);
 }
 
 
@@ -362,9 +369,14 @@ void Display::showCenterText(String text, int y)
 
 void Display::fadeIn()
 {
-  for(int i=0;i<brightness+1;i+=2) {
-    tft.setBrightness(i);
-    delay(5);
+  //M5.Axp.SetLcdVoltage(2800);
+  tft.setBrightness(255);
+  for(int i=0;i<brightness+1;i+=8) {
+    //tft.setBrightness(i);
+    int voltage = map( i, 0, 255, 2700, 2800 );
+    //Serial.printf("FadeIn Voltage: %d\n", voltage);
+    M5.Axp.SetLcdVoltage(voltage);
+    delay(20);
   }
 }
 
@@ -372,9 +384,12 @@ void Display::fadeIn()
 void Display::fadeOut()
 {
   if( brightness > 0 ) {
-    for(int i=0;i<brightness+1;i+=2) {
+    for(int i=0;i<brightness+1;i+=16) {
       tft.setBrightness(brightness-i);
-      delay(5);
+      uint16_t voltage = map( brightness-i, 0, 255, 2500, 2800 );
+      //Serial.printf("FadeOut Voltage: %d\n", voltage);
+      M5.Axp.SetLcdVoltage(voltage);
+      delay(10);
     }
   }
 }
@@ -802,23 +817,42 @@ void Display::listDir(fs::FS &fs, const char * dirname, uint8_t levels) {
 #endif
 
 
+static unsigned long lastBannerUpdate = millis();
+static unsigned long bannerFrameDelay = 30; // millis
+
 void Display::updateBanner(String msg)
 {
-  img.deleteSprite();
 
-  img.setColorDepth(8);
+  if( lastBannerUpdate + bannerFrameDelay > millis() ) return;
 
-  img.createSprite(SCREEN_WIDTH, TEXT_HEIGHT);
+  img.fillSprite( TFT_BLACK );
 
-  this->buildBanner(msg, current_banner_pos);
+  //img.fillSprite( TFT_BLUE );
+  //msg = "W: " + String( SCREEN_WIDTH ) + "px / " + String( TEXT_HEIGHT ) + "px";
 
-  img.pushSprite(0, STATUS_BAR_WIDTH);
+  img.setTextSize(2);           // Font size scaling is x1
+  img.setTextFont(0);           // Font 4 selected
+  img.setTextColor(TFT_WHITE);  // Black text, no background colour
+  img.setTextWrap(false);       // Turn of wrap so we can print past end of sprite
+
+  // Need to print twice so text appears to wrap around at left and right edges
+  img.setCursor(current_banner_pos, 2);  // Print text at xpos
+  img.print(msg);
+
+  img.setCursor(current_banner_pos - SCREEN_WIDTH, 2); // Print text at xpos - sprite width
+  img.print(msg);
+
+  img.pushSprite(80, STATUS_BAR_WIDTH);
 
   current_banner_pos--;
 
   if (current_banner_pos <= 0)
     current_banner_pos = SCREEN_WIDTH + 2;
+
+  lastBannerUpdate = millis();
+
 }
+
 
 
 void Display::buildBanner(String msg, int xpos)
@@ -833,7 +867,7 @@ void Display::buildBanner(String msg, int xpos)
   // Draw some graphics, the text will apear to scroll over these
   //img.fillRect  (SCREEN_WIDTH / 2 - 20, TEXT_HEIGHT / 2 - 10, 40, 20, TFT_YELLOW);
   //img.fillCircle(SCREEN_WIDTH / 2, TEXT_HEIGHT / 2, 10, TFT_ORANGE);
-
+/*
   // Now print text on top of the graphics
   img.setTextSize(2);           // Font size scaling is x1
   img.setTextFont(0);           // Font 4 selected
@@ -845,7 +879,7 @@ void Display::buildBanner(String msg, int xpos)
   img.print(msg);
 
   img.setCursor(xpos - SCREEN_WIDTH, 2); // Print text at xpos - sprite width
-  img.print(msg);
+  img.print(msg);*/
 }
 
 /*

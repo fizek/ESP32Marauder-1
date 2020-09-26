@@ -305,8 +305,8 @@ void MenuFunctions::updateStatusBar()
   wifi_scan_obj.freeRAM();
   if (wifi_scan_obj.free_ram != wifi_scan_obj.old_free_ram) {
     wifi_scan_obj.old_free_ram = wifi_scan_obj.free_ram;
-    tft.fillRect(100, 0, 60, STATUS_BAR_WIDTH, STATUSBAR_COLOR);
-    tft.drawString((String)wifi_scan_obj.free_ram + "B", 100, 0, 2);
+    tft.fillRect(192, 0, 128, STATUS_BAR_WIDTH, STATUSBAR_COLOR);
+    tft.drawString((String)wifi_scan_obj.free_ram + "B", 192, 0, 2);
   }
 
   // Draw battery info
@@ -319,7 +319,7 @@ void MenuFunctions::updateStatusBar()
     the_color = TFT_RED;
 
   tft.drawXBitmap(
-    170,
+    128,
     0,
     (uint8_t*)menu_icons[STATUS_SD],
     16,
@@ -332,8 +332,8 @@ void MenuFunctions::updateStatusBar()
 
 void MenuFunctions::drawStatusBar()
 {
-  tft.fillRect(0, 0, 240, STATUS_BAR_WIDTH, STATUSBAR_COLOR);
-  //tft.fillRect(0, STATUS_BAR_WIDTH + 1, 240, 1, TFT_DARKGREY);
+  tft.fillRect(0, 0, SCREEN_WIDTH, STATUS_BAR_WIDTH, STATUSBAR_COLOR);
+  //tft.fillRect(0, STATUS_BAR_WIDTH + 1, SCREEN_WIDTH, 1, TFT_DARKGREY);
   tft.setTextColor(TFT_WHITE, STATUSBAR_COLOR);
   //tft.setTextSize(2);
 
@@ -366,8 +366,8 @@ void MenuFunctions::drawStatusBar()
   // RAM Stuff
   wifi_scan_obj.freeRAM();
   wifi_scan_obj.old_free_ram = wifi_scan_obj.free_ram;
-  tft.fillRect(100, 0, 60, STATUS_BAR_WIDTH, STATUSBAR_COLOR);
-  tft.drawString((String)wifi_scan_obj.free_ram + "B", 100, 0, 2);
+  tft.fillRect(192, 0, 128, STATUS_BAR_WIDTH, STATUSBAR_COLOR);
+  tft.drawString((String)wifi_scan_obj.free_ram + "B", 192, 0, 2);
 
 
   MenuFunctions::battery2(true);
@@ -379,7 +379,7 @@ void MenuFunctions::drawStatusBar()
     the_color = TFT_RED;
 
   tft.drawXBitmap(
-    170,
+    128,
     0,
     (uint8_t*)menu_icons[STATUS_SD],
     16,
@@ -394,13 +394,13 @@ void MenuFunctions::orientDisplay()
 {
   //tft.init();
 
-  tft.setRotation(0); // Portrait
+  //tft.setRotation(0); // Portrait
 
   tft.setCursor(0, 0);
 
   //uint16_t calData[5] = { 275, 3494, 361, 3528, 4 }; // tft.setRotation(0); // Portrait
   //uint16_t calData[5] = { 339, 3470, 237, 3438, 2 }; // tft.setRotation(0); // Portrait with DIY TFT
-
+/*
 #if defined(TFT_SHIELD)
   uint16_t calData[5] = { 275, 3494, 361, 3528, 4 }; // tft.setRotation(0); // Portrait with TFT Shield
   Serial.println("Using TFT Shield");
@@ -412,7 +412,7 @@ void MenuFunctions::orientDisplay()
 #endif
 
   tft.setTouchCalibrate(calData);
-
+*/
   //display_obj.clearScreen();
 
   changeMenu(current_menu);
@@ -710,7 +710,7 @@ void MenuFunctions::showMenuList(Menu * menu, int layer)
 // Function to add MenuNodes to a menu
 void MenuFunctions::addNodes(Menu * menu, String name, uint16_t color, Menu * child, int place, std::function<void()> callable)
 {
-  TouchButton new_button;
+  TFT_eSPI_Button new_button;
   menu->list->add(MenuNode{name, color, place, &new_button, callable});
   //strcpy(menu->list->get(-1).icon, bluetooth_icon);
 }
@@ -724,7 +724,7 @@ void MenuFunctions::buildButtons(Menu * menu)
     //  key[i] = NULL;
     for (int i = 0; i < menu->list->size(); i++)
     {
-      TouchButton new_button;
+      //TouchButton new_button;
       char buf[menu->list->get(i).name.length() + 1] = {};
       menu->list->get(i).name.toCharArray(buf, menu->list->get(i).name.length() + 1);
       display_obj.key[i].initButton(
@@ -751,7 +751,7 @@ void MenuFunctions::displayCurrentMenu()
   display_obj.clearScreen();
   tft.setTextColor(TFT_LIGHTGREY, TFT_DARKGREY);
   this->drawStatusBar();
-  //tft.fillRect(0,0,240,16, TFT_DARKGREY);
+  //tft.fillRect(0,0,SCREEN_WIDTH,16, TFT_DARKGREY);
   //tft.drawCentreString(" ESP32 Marauder ",120,0,2);
   //Serial.println("Getting size...");
   //char buf[&current_menu->parentMenu->name.length() + 1] = {};

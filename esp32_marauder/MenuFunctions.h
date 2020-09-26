@@ -17,10 +17,10 @@ extern SDInterface sd_obj;
 extern BatteryInterface battery_obj;
 
 // Keypad start position, key sizes and spacing
-#define KEY_X 120 // Centre of key
+#define KEY_X 160 // Centre of key
 #define KEY_Y 50
-#define KEY_W 240 // Width and height
-#define KEY_H 22
+#define KEY_W 320 // Width and height
+#define KEY_H 32
 #define KEY_SPACING_X 0 // X and Y gap
 #define KEY_SPACING_Y 10 // space for fingers FFS !!
 #define KEY_TEXTSIZE 1   // Font size multiplier

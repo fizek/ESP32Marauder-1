@@ -2,12 +2,16 @@
 #define Display_h
 
 
-#define LGFX_LOLIN_D32_PRO
-#define TOUCH_CS 21 // enable touch
-#include <ESP32-Chimera-Core.h> // https://github.com/tobozo/ESP32-Chimera-Core or regular M5Stack Core
+//#define LGFX_LOLIN_D32_PRO
+//#define TOUCH_CS 21 // enable touch
+//#include <ESP32-Chimera-Core.h> // https://github.com/tobozo/ESP32-Chimera-Core or regular M5Stack Core
+#include <M5Core2.h>
 #include <M5StackUpdater.h>
 #define tft M5.Lcd
 static TFT_eSprite img = new TFT_eSprite( &tft );
+#ifndef TFT_VIOLET
+  #define TFT_VIOLET      0x915C      /* 180,  46, 226 */
+#endif
 
 //#include <FS.h>
 //#include <functional>
@@ -27,15 +31,15 @@ static TFT_eSprite img = new TFT_eSprite( &tft );
 //#define TFT_SHIELD
 #define TFT_DIY
 
-#define SCREEN_WIDTH 240
-#define SCREEN_HEIGHT 320
+#define SCREEN_WIDTH 320
+#define SCREEN_HEIGHT 240
 #define HEIGHT_1 240
 #define WIDTH_1 320
 #define STANDARD_FONT_CHAR_LIMIT 40 // number of characters on a single line with normal font
 #define TEXT_HEIGHT 16 // Height of text to be printed and scrolled
 #define BOT_FIXED_AREA 0 // Number of lines in bottom fixed area (lines counted from bottom of screen)
 #define TOP_FIXED_AREA 48 // Number of lines in top fixed area (lines counted from top of screen)
-#define YMAX 320 // Bottom of screen area
+#define YMAX 240 // Bottom of screen area
 #define minimum(a,b)     (((a) < (b)) ? (a) : (b))
 //#define MENU_FONT NULL
 #define MENU_FONT &FreeMono9pt7b // Winner
@@ -83,7 +87,7 @@ class Display
     Ticker tick;
     //TFT_eSPI tft = TFT_eSPI();
     //TFT_eSprite img = TFT_eSprite(&tft);
-    TouchButton key[BUTTON_ARRAY_LEN];
+    TFT_eSPI_Button key[BUTTON_ARRAY_LEN];
     String version_number = "v0.8.1";
 
     bool printing = false;
@@ -92,7 +96,7 @@ class Display
     bool draw_tft = false;
     bool exit_draw = false;
 
-    byte brightness = 128; // 0 = off, 255 = max
+    byte brightness = 255; // 0 = off, 255 = max
 
     int TOP_FIXED_AREA_2 = 48;
     int print_delay_1, print_delay_2 = 10;

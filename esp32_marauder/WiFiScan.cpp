@@ -348,8 +348,8 @@ void WiFiScan::RunEspressifScan(uint8_t scan_mode, uint16_t color) {
   display_obj.initScrollValues(true);
   tft.setTextWrap(false);
   tft.setTextColor(TFT_WHITE, color);
-  tft.fillRect(0,16,240,16, color);
-  tft.drawCentreString(" Detect Espressif ",120,16,2);
+  tft.fillRect(0,16,SCREEN_WIDTH,16, color);
+  tft.drawCentreString(" Detect Espressif ",SCREEN_WIDTH/2,16,2);
   display_obj.touchToExit();
   tft.setTextColor(TFT_GREEN, TFT_BLACK);
   display_obj.setupScrollArea(display_obj.TOP_FIXED_AREA_2, BOT_FIXED_AREA);
@@ -368,7 +368,7 @@ void WiFiScan::RunEspressifScan(uint8_t scan_mode, uint16_t color) {
 void WiFiScan::RunPacketMonitor(uint8_t scan_mode, uint16_t color)
 {
   tft.init();
-  tft.setRotation(1);
+  //tft.setRotation(1);
   tft.fillScreen(TFT_BLACK);
 
   sd_obj.openCapture("packet_monitor");
@@ -417,18 +417,21 @@ void WiFiScan::RunEapolScan(uint8_t scan_mode, uint16_t color)
 {
   num_eapol = 0;
   tft.init();
-  tft.setRotation(1);
+  //tft.setRotation(1);
   tft.fillScreen(TFT_BLACK);
 
   sd_obj.openCapture("eapol");
-
+/*
   #ifdef TFT_SHIELD
     uint16_t calData[5] = { 391, 3491, 266, 3505, 7 }; // Landscape TFT Shield
     Serial.println("Using TFT Shield");
-  #else if defined(TFT_DIY)
+  #elif defined(TFT_DIY)
     uint16_t calData[5] = { 213, 3469, 320, 3446, 1 }; // Landscape TFT DIY
     Serial.println("Using TFT DIY");
+  #else
+    #error "NO TFT DEFINED"
   #endif
+*/
   //tft.setTouchCalibrate(calData);
 
   //tft.setFreeFont(1);
@@ -470,8 +473,8 @@ void WiFiScan::RunRickRoll(uint8_t scan_mode, uint16_t color)
   display_obj.initScrollValues(true);
   tft.setTextWrap(false);
   tft.setTextColor(TFT_BLACK, color);
-  tft.fillRect(0,16,240,16, color);
-  tft.drawCentreString(" Rick Roll Beacon ",120,16,2);
+  tft.fillRect(0,16,SCREEN_WIDTH,16, color);
+  tft.drawCentreString(" Rick Roll Beacon ",SCREEN_WIDTH/2,16,2);
   display_obj.touchToExit();
   tft.setTextColor(TFT_GREEN, TFT_BLACK);
   packets_sent = 0;
@@ -498,8 +501,8 @@ void WiFiScan::RunBeaconSpam(uint8_t scan_mode, uint16_t color)
   display_obj.initScrollValues(true);
   tft.setTextWrap(false);
   tft.setTextColor(TFT_BLACK, color);
-  tft.fillRect(0,16,240,16, color);
-  tft.drawCentreString(" Beacon Spam Random ",120,16,2);
+  tft.fillRect(0,16,SCREEN_WIDTH,16, color);
+  tft.drawCentreString(" Beacon Spam Random ",SCREEN_WIDTH/2,16,2);
   display_obj.touchToExit();
   tft.setTextColor(TFT_GREEN, TFT_BLACK);
   packets_sent = 0;
@@ -526,8 +529,8 @@ void WiFiScan::RunPwnScan(uint8_t scan_mode, uint16_t color)
   display_obj.initScrollValues(true);
   tft.setTextWrap(false);
   tft.setTextColor(TFT_WHITE, color);
-  tft.fillRect(0,16,240,16, color);
-  tft.drawCentreString(" Detect Pwnagotchi ",120,16,2);
+  tft.fillRect(0,16,SCREEN_WIDTH,16, color);
+  tft.drawCentreString(" Detect Pwnagotchi ",SCREEN_WIDTH/2,16,2);
   display_obj.touchToExit();
   tft.setTextColor(TFT_GREEN, TFT_BLACK);
   display_obj.setupScrollArea(display_obj.TOP_FIXED_AREA_2, BOT_FIXED_AREA);
@@ -556,8 +559,8 @@ void WiFiScan::RunBeaconScan(uint8_t scan_mode, uint16_t color)
   display_obj.initScrollValues(true);
   tft.setTextWrap(false);
   tft.setTextColor(TFT_WHITE, color);
-  tft.fillRect(0,16,240,16, color);
-  tft.drawCentreString(" Beacon Sniffer ",120,16,2);
+  tft.fillRect(0,16,SCREEN_WIDTH,16, color);
+  tft.drawCentreString(" Beacon Sniffer ",SCREEN_WIDTH/2,16,2);
   display_obj.touchToExit();
   tft.setTextColor(TFT_GREEN, TFT_BLACK);
   display_obj.setupScrollArea(display_obj.TOP_FIXED_AREA_2, BOT_FIXED_AREA);
@@ -585,8 +588,8 @@ void WiFiScan::RunDeauthScan(uint8_t scan_mode, uint16_t color)
   display_obj.initScrollValues(true);
   tft.setTextWrap(false);
   tft.setTextColor(TFT_BLACK, color);
-  tft.fillRect(0,16,240,16, color);
-  tft.drawCentreString(" Deauthentication Sniffer ",120,16,2);
+  tft.fillRect(0,16,SCREEN_WIDTH,16, color);
+  tft.drawCentreString(" Deauthentication Sniffer ",SCREEN_WIDTH/2,16,2);
   display_obj.touchToExit();
   tft.setTextColor(TFT_RED, TFT_BLACK);
   display_obj.setupScrollArea(display_obj.TOP_FIXED_AREA_2, BOT_FIXED_AREA);
@@ -616,8 +619,8 @@ void WiFiScan::RunProbeScan(uint8_t scan_mode, uint16_t color)
   display_obj.initScrollValues(true);
   tft.setTextWrap(false);
   tft.setTextColor(TFT_BLACK, color);
-  tft.fillRect(0,16,240,16, color);
-  tft.drawCentreString(" Probe Request Sniffer ",120,16,2);
+  tft.fillRect(0,16,SCREEN_WIDTH,16, color);
+  tft.drawCentreString(" Probe Request Sniffer ",SCREEN_WIDTH/2,16,2);
   display_obj.touchToExit();
   tft.setTextColor(TFT_GREEN, TFT_BLACK);
   display_obj.setupScrollArea(display_obj.TOP_FIXED_AREA_2, BOT_FIXED_AREA);
@@ -666,8 +669,8 @@ void WiFiScan::RunBluetoothScan(uint8_t scan_mode, uint16_t color)
     display_obj.initScrollValues(true);
     tft.setTextWrap(false);
     tft.setTextColor(TFT_BLACK, color);
-    tft.fillRect(0,16,240,16, color);
-    tft.drawCentreString(" Bluetooth Sniff ",120,16,2);
+    tft.fillRect(0,16,SCREEN_WIDTH,16, color);
+    tft.drawCentreString(" Bluetooth Sniff ",SCREEN_WIDTH/2,16,2);
     display_obj.touchToExit();
     tft.setTextColor(TFT_CYAN, TFT_BLACK);
     display_obj.setupScrollArea(display_obj.TOP_FIXED_AREA_2, BOT_FIXED_AREA);
@@ -684,8 +687,8 @@ void WiFiScan::RunBluetoothScan(uint8_t scan_mode, uint16_t color)
     display_obj.initScrollValues(true);
     tft.setTextWrap(false);
     tft.setTextColor(TFT_BLACK, color);
-    tft.fillRect(0,16,240,16, color);
-    tft.drawCentreString(" Detect Card Skimmers ",120,16,2);
+    tft.fillRect(0,16,SCREEN_WIDTH,16, color);
+    tft.drawCentreString(" Detect Card Skimmers ",SCREEN_WIDTH/2,16,2);
     display_obj.twoPartDisplay("Scanning for\nBluetooth-enabled skimmers\nHC-03, HC-05, and HC-06...");
     tft.setTextColor(TFT_BLACK, TFT_DARKGREY);
     display_obj.setupScrollArea(display_obj.TOP_FIXED_AREA_2, BOT_FIXED_AREA);
