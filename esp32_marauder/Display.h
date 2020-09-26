@@ -5,6 +5,7 @@
 #define LGFX_LOLIN_D32_PRO
 #define TOUCH_CS 21 // enable touch
 #include <ESP32-Chimera-Core.h> // https://github.com/tobozo/ESP32-Chimera-Core or regular M5Stack Core
+#include <M5StackUpdater.h>
 #define tft M5.Lcd
 static TFT_eSprite img = new TFT_eSprite( &tft );
 

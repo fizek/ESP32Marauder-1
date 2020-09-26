@@ -6,8 +6,8 @@ https://www.online-utility.org/image/convert/to/XBM
 */
 
 
-#include <ESP32-Chimera-Core.h> // https://github.com/tobozo/ESP32-Chimera-Core or regular M5Stack Core
-#define tft M5.Lcd
+//#include <ESP32-Chimera-Core.h> // https://github.com/tobozo/ESP32-Chimera-Core or regular M5Stack Core
+//#define tft M5.Lcd
 
 #define TOUCH_CS 21 // Touch CS pin for XPT2046 interface (SPI Shared)
 #define SD_CS_PIN 4 // comment this out to use ESP32Marauder defaults
